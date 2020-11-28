@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -96,8 +97,8 @@ class _PoplularCourseState extends State<PoplularCourse> {
                                             topRight: Radius.circular(20.0),
                                           ),
                                           image: DecorationImage(
-                                            image: AssetImage(
-                                                "assets/new_course/teacher.png"),
+                                            image: NetworkImage(snapshot
+                                                .data[index].courseImage),
                                             fit: BoxFit.cover,
                                           )),
                                     ),
@@ -198,9 +199,6 @@ class Courses {
 
 Future<List<Courses>> loadProducts() async {
   NetworkHandler networkHandler = NetworkHandler();
-  // var jsonString =
-  //     await rootBundle.loadString('assets/json/popular_course.json');
-  // final jsonResponse = json.decode(jsonString);
   var tendcourseResponse = await networkHandler.get("/trending-course");
   List<dynamic> data = tendcourseResponse["data"];
   List<Courses> courses = [];

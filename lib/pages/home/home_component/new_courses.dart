@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:learn_pro/services/networkHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -88,8 +88,7 @@ class _NewCourseState extends State<NewCourse> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Hero(
-                                    tag: Text(
-                                        '${snapshot.data[index].courseId}'),
+                                    tag: Text(snapshot.data[index].courseId),
                                     child: Container(
                                       height: 150.0,
                                       width: 230.0,
@@ -99,7 +98,7 @@ class _NewCourseState extends State<NewCourse> {
                                             topRight: Radius.circular(20.0),
                                           ),
                                           image: DecorationImage(
-                                            image: AssetImage(snapshot
+                                            image: NetworkImage(snapshot
                                                 .data[index].courseImage),
                                             fit: BoxFit.cover,
                                           )),
@@ -148,7 +147,8 @@ class _NewCourseState extends State<NewCourse> {
                                               width: 5.0,
                                             ),
                                             Text(
-                                              '(${snapshot.data[index].courseNumberOfRating})',
+                                              snapshot.data[index]
+                                                  .courseNumberOfRating,
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 14.0,
@@ -159,7 +159,7 @@ class _NewCourseState extends State<NewCourse> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          '\$${snapshot.data[index].coursePrice}',
+                                          snapshot.data[index].coursePrice,
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 18.0,
@@ -200,21 +200,25 @@ class Courses {
 }
 
 Future<List<Courses>> loadProducts() async {
-  var jsonString = await rootBundle.loadString('assets/json/new_course.json');
-  final jsonResponse = json.decode(jsonString);
-
+  NetworkHandler networkHandler = NetworkHandler();
+  var courseResponse = await networkHandler.get("/course");
+  List<dynamic> data = courseResponse["data"];
   List<Courses> courses = [];
+  int courcesNum = data.length;
 
-  for (var o in jsonResponse) {
+  for (int i = 0; i < courcesNum; i++) {
+    Map<String, dynamic> subData = data[i];
+    var _list = subData.values.toList();
+    print(_list[3]);
+    print(_list[12]);
     Courses course = Courses(
-        o["courseId"],
-        o["image"],
-        o["courseName"],
-        o["courseCategory"],
-        o["courseRating"],
-        o["courseNumberOfRating"],
-        o["coursePrice"]);
-
+        _list[3].toString(),
+        _list[12].toString(),
+        _list[4].toString(),
+        _list[8].toString(),
+        "4.0",
+        "10",
+        _list[6].toString());
     courses.add(course);
   }
 

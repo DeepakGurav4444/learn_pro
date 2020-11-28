@@ -91,7 +91,7 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(height: 10.0),
             PoplularCourse(),
             SizedBox(height: 10.0),
-            // NewCourse(),
+            NewCourse(),
             SizedBox(height: 10.0),
             InstructorHomeSlide(),
           ],
