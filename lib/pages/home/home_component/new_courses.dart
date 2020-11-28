@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/pages/course/course.dart';
+
 class NewCourse extends StatefulWidget {
   @override
   _NewCourseState createState() => _NewCourseState();
@@ -87,7 +88,8 @@ class _NewCourseState extends State<NewCourse> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Hero(
-                                    tag: Text('${snapshot.data[index].courseId}'),
+                                    tag: Text(
+                                        '${snapshot.data[index].courseId}'),
                                     child: Container(
                                       height: 150.0,
                                       width: 230.0,
@@ -185,7 +187,7 @@ class _NewCourseState extends State<NewCourse> {
 }
 
 class Courses {
-  int courseId;
+  String courseId;
   String courseImage;
   String courseName;
   String courseCategory;

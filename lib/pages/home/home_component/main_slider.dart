@@ -39,32 +39,26 @@ class _MainSliderState extends State<MainSlider> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
                     image: DecorationImage(
-                      image: AssetImage("assets/new_course/new_course_2.png"),
+                      image: AssetImage("assets/new_course/teacher.png"),
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Shonda Rhymes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25.0,
-                          fontFamily: 'Signika Negative',
-                          fontWeight: FontWeight.w700,
-                        ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                    child: Text(
+                      "Best Class Teachers",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        'Shonda describes what fuels her passion.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontFamily: 'Signika Negative',
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -78,32 +72,26 @@ class _MainSliderState extends State<MainSlider> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
                     image: DecorationImage(
-                      image: AssetImage("assets/new_course/new_course_3.png"),
+                      image: AssetImage("assets/new_course/learn.png"),
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Shonda Rhymes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25.0,
-                          fontFamily: 'Signika Negative',
-                          fontWeight: FontWeight.w700,
-                        ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                    child: Text(
+                      "Learn Cources Online",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        'Shonda describes what fuels her passion.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontFamily: 'Signika Negative',
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -117,32 +105,26 @@ class _MainSliderState extends State<MainSlider> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
                     image: DecorationImage(
-                      image: AssetImage("assets/new_course/new_course_4.png"),
+                      image: AssetImage("assets/new_course/book.png"),
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Shonda Rhymes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25.0,
-                          fontFamily: 'Signika Negative',
-                          fontWeight: FontWeight.w700,
-                        ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                    child: Text(
+                      "Book Library & Store",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        'Shonda describes what fuels her passion.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontFamily: 'Signika Negative',
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

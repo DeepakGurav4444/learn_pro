@@ -26,7 +26,10 @@ class _HomeMainState extends State<HomeMain> {
                 IconButton(
                   icon: Icon(Icons.notifications),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Notifications()));
                   },
                 ),
               ],
@@ -88,7 +91,7 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(height: 10.0),
             PoplularCourse(),
             SizedBox(height: 10.0),
-            NewCourse(),
+            // NewCourse(),
             SizedBox(height: 10.0),
             InstructorHomeSlide(),
           ],

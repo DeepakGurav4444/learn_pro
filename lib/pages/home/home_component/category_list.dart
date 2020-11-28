@@ -9,11 +9,11 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   final categoryList = [
     {
-      'categoryName': 'Art & Photography',
-      'image': 'assets/category/category_1.jpg',
+      'categoryName': 'All',
+      'image': 'assets/category/category.png',
     },
     {
-      'categoryName': 'Health & Fitness',
+      'categoryName': 'Academics',
       'image': 'assets/category/category_2.jpg',
     },
     {
@@ -54,40 +54,40 @@ class _CategoryListState extends State<CategoryList> {
                           Category(categoryName: item['categoryName'])));
             },
             child: Container(
-                width: 130.0,
-                margin: (index == categoryList.length - 1)
-                    ? EdgeInsets.only(left: 10.0, right: 10.0)
-                    : EdgeInsets.only(left: 10.0),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(item['image']),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(65.0),
+              width: 130.0,
+              margin: (index == categoryList.length - 1)
+                  ? EdgeInsets.only(left: 10.0, right: 10.0)
+                  : EdgeInsets.only(left: 10.0),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(item['image']),
+                  fit: BoxFit.cover,
                 ),
-                child: Container(
-                  width: 130.0,
-                  height: 130.0,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(65.0),
-                    color: Colors.black.withOpacity(0.6),
-                  ),
-                  child: Text(
-                    item['categoryName'],
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Signika Negative',
-                      letterSpacing: 0.7,
-                      height: 1.5,
-                    ),
+                borderRadius: BorderRadius.circular(65.0),
+              ),
+              child: Container(
+                width: 130.0,
+                height: 130.0,
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(65.0),
+                  color: Colors.black.withOpacity(0.6),
+                ),
+                child: Text(
+                  item['categoryName'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Signika Negative',
+                    letterSpacing: 0.7,
+                    height: 1.5,
                   ),
                 ),
               ),
+            ),
           );
         },
       ),

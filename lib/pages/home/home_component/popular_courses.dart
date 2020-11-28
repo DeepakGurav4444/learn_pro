@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import 'package:learn_pro/services/networkHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/pages/course/course.dart';
+
 class PoplularCourse extends StatefulWidget {
   @override
   _PoplularCourseState createState() => _PoplularCourseState();
@@ -14,7 +15,6 @@ class _PoplularCourseState extends State<PoplularCourse> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-
     return Container(
       width: width,
       height: 400.0,
@@ -42,7 +42,6 @@ class _PoplularCourseState extends State<PoplularCourse> {
               future: loadProducts(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);
-
                 return snapshot.hasData
                     ? ListView.builder(
                         itemCount: snapshot.data.length,
@@ -87,7 +86,7 @@ class _PoplularCourseState extends State<PoplularCourse> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Hero(
-                                    tag: Text('${snapshot.data[index].courseId}'),
+                                    tag: Text(snapshot.data[index].courseId),
                                     child: Container(
                                       height: 150.0,
                                       width: 230.0,
@@ -97,8 +96,8 @@ class _PoplularCourseState extends State<PoplularCourse> {
                                             topRight: Radius.circular(20.0),
                                           ),
                                           image: DecorationImage(
-                                            image: AssetImage(snapshot
-                                                .data[index].courseImage),
+                                            image: AssetImage(
+                                                "assets/new_course/teacher.png"),
                                             fit: BoxFit.cover,
                                           )),
                                     ),
@@ -185,7 +184,7 @@ class _PoplularCourseState extends State<PoplularCourse> {
 }
 
 class Courses {
-  int courseId;
+  String courseId;
   String courseImage;
   String courseName;
   String courseCategory;
@@ -198,21 +197,28 @@ class Courses {
 }
 
 Future<List<Courses>> loadProducts() async {
-  var jsonString = await rootBundle.loadString('assets/json/popular_course.json');
-  final jsonResponse = json.decode(jsonString);
-
+  NetworkHandler networkHandler = NetworkHandler();
+  // var jsonString =
+  //     await rootBundle.loadString('assets/json/popular_course.json');
+  // final jsonResponse = json.decode(jsonString);
+  var tendcourseResponse = await networkHandler.get("/trending-course");
+  List<dynamic> data = tendcourseResponse["data"];
   List<Courses> courses = [];
+  int courcesNum = data.length;
 
-  for (var o in jsonResponse) {
+  for (int i = 0; i < courcesNum; i++) {
+    Map<String, dynamic> subData = data[i];
+    var _list = subData.values.toList();
+    print(_list[3]);
+    print(_list[12]);
     Courses course = Courses(
-        o["courseId"],
-        o["image"],
-        o["courseName"],
-        o["courseCategory"],
-        o["courseRating"],
-        o["courseNumberOfRating"],
-        o["coursePrice"]);
-
+        _list[3].toString(),
+        _list[12].toString(),
+        _list[4].toString(),
+        _list[8].toString(),
+        "4.0",
+        "10",
+        _list[6].toString());
     courses.add(course);
   }
 

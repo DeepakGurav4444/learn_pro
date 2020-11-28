@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'package:learn_pro/pages/home/home_main.dart';
 import 'package:learn_pro/pages/login_signup/forgot_password.dart';
 import 'package:learn_pro/pages/login_signup/signup.dart';
 import 'package:learn_pro/services/networkHandler.dart';
@@ -126,13 +127,12 @@ class _LoginState extends State<Login> {
                         if (loginFormKey.currentState.validate()) {
                           var responseLogin =
                               await networkHandler.post("/login", data);
-                          print(responseLogin.body);
                         }
                         Navigator.push(
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: SignUp(),
+                            child: HomeMain(),
                           ),
                         );
                       },
