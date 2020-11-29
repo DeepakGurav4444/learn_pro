@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'dart:convert';
 import 'package:learn_pro/pages/login_signup/login.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:learn_pro/services/networkHandler.dart';
 
 class AccountSettings extends StatefulWidget {
   @override
@@ -8,23 +12,23 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  String number = '9603456878';
-  String email = 'test@abc.com';
-  var phoneController = TextEditingController();
+  bool receiveData = false;
+  final storage = FlutterSecureStorage();
+  NetworkHandler networkHandler = NetworkHandler();
+  String username;
+  String email;
+  var usernameController = TextEditingController();
   var emailController = TextEditingController();
-
   @override
   void initState() {
+    getData();
     super.initState();
-    phoneController.text = number;
-    emailController.text = email;
   }
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-
-    changePhoneNumber() {
+    changeUserName() {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -42,7 +46,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Change Phone Number",
+                    "Change Username",
                     style: TextStyle(
                       fontFamily: 'Signika Negative',
                       fontSize: 21.0,
@@ -53,7 +57,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                     height: 20.0,
                   ),
                   TextField(
-                    controller: phoneController,
+                    controller: usernameController,
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w700,
@@ -61,7 +65,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                     ),
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: 'Enter Phone Number',
+                      hintText: 'Enter Username',
                       hintStyle: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 16.0,
@@ -98,145 +102,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                       InkWell(
                         onTap: () {
                           setState(() {
-                            number = phoneController.text;
+                            username = usernameController.text;
                             Navigator.pop(context);
                           });
-                        },
-                        child: Container(
-                          width: (width / 3.5),
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: textColor,
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          child: Text(
-                            'Okay',
-                            style: TextStyle(
-                              fontFamily: 'Signika Negative',
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    }
-
-    changePassword() {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          // return object of type Dialog
-          return Dialog(
-            elevation: 0.0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            child: Container(
-              height: 295.0,
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Change Your Password",
-                    style: TextStyle(
-                      fontFamily: 'Signika Negative',
-                      fontSize: 21.0,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextField(
-                    obscureText: true,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Signika Negative',
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Old Password',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Signika Negative',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    obscureText: true,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Signika Negative',
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'New Password',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Signika Negative',
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    obscureText: true,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Signika Negative',
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Confirm New Password',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Signika Negative',
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: (width / 3.5),
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontFamily: 'Signika Negative',
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
                         },
                         child: Container(
                           width: (width / 3.5),
@@ -425,8 +293,14 @@ class _AccountSettingsState extends State<AccountSettings> {
                         ),
                       ),
                       InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
+                        onTap: () async {
+                          await storage.deleteAll();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Login(),
+                            ),
+                          );
                         },
                         child: Container(
                           width: (width / 3.5),
@@ -512,7 +386,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 ),
                 SizedBox(height: 5.0),
                 Text(
-                  'Allison Perry',
+                  username,
                   style: TextStyle(
                     fontSize: 20.0,
                     fontFamily: 'Signika Negative',
@@ -544,7 +418,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'Phone Number',
+                                'Username ',
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontFamily: 'Signika Negative',
@@ -553,7 +427,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                               ),
                               SizedBox(height: 5.0),
                               Text(
-                                '$number',
+                                '$username',
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   fontFamily: 'Signika Negative',
@@ -565,7 +439,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                           ),
                           IconButton(
                             onPressed: () {
-                              changePhoneNumber();
+                              changeUserName();
                             },
                             icon: Icon(
                               Icons.edit,
@@ -617,47 +491,6 @@ class _AccountSettingsState extends State<AccountSettings> {
                         ],
                       ),
                       Divider(),
-                      SizedBox(height: 10.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Password',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontFamily: 'Signika Negative',
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Text(
-                                '******',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontFamily: 'Signika Negative',
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              changePassword();
-                            },
-                            icon: Icon(
-                              Icons.edit,
-                              color: Colors.grey[400],
-                              size: 25.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Divider(),
                     ],
                   ),
                 ),
@@ -699,7 +532,30 @@ class _AccountSettingsState extends State<AccountSettings> {
     }
 
     return Scaffold(
-      body: nestedAppBar(),
+      body: receiveData
+          ? nestedAppBar()
+          : Center(
+              child: SpinKitRipple(color: Colors.red),
+            ),
     );
+  }
+
+  getData() async {
+    String getUsername = await storage.read(key: "email");
+    String getPassword = await storage.read(key: "password");
+    Map<String, String> data = {"email": getUsername, "password": getPassword};
+    print(data);
+    var responseLogin = await networkHandler.post("/login", data);
+    Map<String, dynamic> profileData = json.decode(responseLogin.body);
+    username = profileData["username"];
+    email = profileData["email"];
+    print([username, email]);
+    if (username != null) {
+      setState(() {
+        receiveData = true;
+      });
+      usernameController.text = username;
+      emailController.text = email;
+    }
   }
 }

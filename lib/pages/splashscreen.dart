@@ -1,6 +1,7 @@
 import 'dart:async';
-
+import 'package:learn_pro/pages/home/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/onboarding/onboarding.dart';
 
@@ -10,16 +11,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  String _id;
+  final storage = new FlutterSecureStorage();
   @override
   void initState() {
-    super.initState();
-
+    checkLogin();
     Timer(
         Duration(seconds: 3),
         () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => OnBoarding()),
+              MaterialPageRoute(
+                builder: (context) => _id == null ? OnBoarding() : Home(),
+              ),
             ));
+    super.initState();
   }
 
   @override
@@ -45,5 +50,10 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  checkLogin() async {
+    _id = await storage.read(key: "id");
+    print(_id);
   }
 }

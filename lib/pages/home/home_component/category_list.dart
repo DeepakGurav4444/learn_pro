@@ -10,7 +10,7 @@ class _CategoryListState extends State<CategoryList> {
   final categoryList = [
     {
       'categoryName': 'All',
-      'image': 'assets/category/category.png',
+      'image': 'assets/category/category_1.jpg',
     },
     {
       'categoryName': 'Academics',

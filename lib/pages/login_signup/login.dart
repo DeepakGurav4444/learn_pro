@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
-import 'package:learn_pro/pages/home/home_main.dart';
+import 'package:learn_pro/pages/home/home.dart';
 import 'package:learn_pro/pages/login_signup/forgot_password.dart';
 import 'package:learn_pro/pages/login_signup/signup.dart';
 import 'package:learn_pro/services/networkHandler.dart';
@@ -15,6 +17,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final storage = new FlutterSecureStorage();
   NetworkHandler networkHandler = NetworkHandler();
   //Controllers for validation
   TextEditingController _emailController = TextEditingController();
@@ -127,12 +130,21 @@ class _LoginState extends State<Login> {
                         if (loginFormKey.currentState.validate()) {
                           var responseLogin =
                               await networkHandler.post("/login", data);
+                          Map<String, dynamic> loginOutput =
+                              json.decode(responseLogin.body);
+                          print(loginOutput);
+                          await storage.write(
+                              key: "id", value: loginOutput["_id"]);
+                          await storage.write(
+                              key: "email", value: _emailController.text);
+                          await storage.write(
+                              key: "password", value: _passwordController.text);
                         }
                         Navigator.push(
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: HomeMain(),
+                            child: Home(),
                           ),
                         );
                       },
@@ -156,7 +168,6 @@ class _LoginState extends State<Login> {
                     SizedBox(height: 15.0),
                     InkWell(
                       onTap: () {
-                        if (loginFormKey.currentState.validate()) {}
                         Navigator.push(
                             context,
                             PageTransition(

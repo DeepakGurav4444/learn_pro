@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'package:learn_pro/pages/home/home.dart';
 import 'package:learn_pro/pages/login_signup/otp_screen.dart';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:page_transition/page_transition.dart';
@@ -10,6 +14,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final storage = new FlutterSecureStorage();
   //Network Handler Object
   NetworkHandler networkHandler = NetworkHandler();
 
@@ -18,7 +23,6 @@ class _SignUpState extends State<SignUp> {
   //Controllers for Validations
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
@@ -130,27 +134,6 @@ class _SignUpState extends State<SignUp> {
                     ),
                     SizedBox(height: 10.0),
                     TextFormField(
-                      keyboardType: TextInputType.number,
-                      validator: (String val) {
-                        if (val.isEmpty) {
-                          return "field can't be empty";
-                        } else if (val.length != 10) {
-                          return " number should be ten characters long";
-                        }
-                      },
-                      controller: _phoneNumberController,
-                      decoration: InputDecoration(
-                        hintText: 'Phone number',
-                        hintStyle: TextStyle(
-                          fontFamily: 'Signika Negative',
-                          color: Colors.grey[500],
-                        ),
-                        contentPadding:
-                            const EdgeInsets.only(top: 12.0, bottom: 12.0),
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    TextFormField(
                       validator: (String val) {
                         if (val.isEmpty) {
                           return "field can't be empty";
@@ -213,11 +196,28 @@ class _SignUpState extends State<SignUp> {
                           var responseRegister =
                               await networkHandler.post("/register", data);
                           print(responseRegister.body);
+                          Map<String, String> loginData = {
+                            "email": _emailController.text,
+                            "password": _passwordController.text
+                          };
+                          var responseLogin =
+                              await networkHandler.post("/login", loginData);
+                          Map<String, dynamic> loginOutput =
+                              json.decode(responseLogin.body);
+                          print(loginOutput);
+                          await storage.write(
+                              key: "id", value: loginOutput["_id"]);
+                          await storage.write(
+                              key: "email", value: _emailController.text);
+                          await storage.write(
+                              key: "password", value: _passwordController.text);
                           Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: OTPScreen()));
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: Home(),
+                            ),
+                          );
                         }
                       },
                       child: Container(

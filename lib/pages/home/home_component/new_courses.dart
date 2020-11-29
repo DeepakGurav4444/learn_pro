@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/pages/course/course.dart';
@@ -209,8 +207,6 @@ Future<List<Courses>> loadProducts() async {
   for (int i = 0; i < courcesNum; i++) {
     Map<String, dynamic> subData = data[i];
     var _list = subData.values.toList();
-    print(_list[3]);
-    print(_list[12]);
     Courses course = Courses(
         _list[3].toString(),
         _list[12].toString(),

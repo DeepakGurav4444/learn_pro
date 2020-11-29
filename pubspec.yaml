@@ -39,6 +39,7 @@ dependencies:
   chewie: ^0.9.10
   video_player: ^0.10.12
   cached_network_image: ^2.3.3
+  flutter_secure_storage: ^3.3.5
   custom_switch: 
 
 dev_dependencies:
