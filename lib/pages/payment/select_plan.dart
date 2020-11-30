@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/home/home.dart';
+import 'package:learn_pro/services/networkHandler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SelectPlan extends StatefulWidget {
-  final String courseName, image, price;
-  SelectPlan({Key key, this.courseName, this.image, this.price})
+  final String courseName, image, price, courseId;
+  SelectPlan({Key key, this.courseName, this.image, this.price, this.courseId})
       : super(key: key);
   @override
   _SelectPlanState createState() => _SelectPlanState();
 }
 
 class _SelectPlanState extends State<SelectPlan> {
+  final storage = new FlutterSecureStorage();
+  NetworkHandler networkHandler = NetworkHandler();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    String courseId = widget.courseId;
     String courseName = widget.courseName;
     String courseImage = widget.image;
     String coursePrice = widget.price;
@@ -222,7 +227,16 @@ class _SelectPlanState extends State<SelectPlan> {
                             ),
                           ),
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              String userId = await storage.read(key: "id");
+                              Map<String, String> enrollAddData = {
+                                "courseId": courseId,
+                                "user_id": userId
+                              };
+                              print("CourceId:  " + courseId);
+                              var responseAddEnroll = await networkHandler.post(
+                                  "/enroll-course", enrollAddData);
+                              print(responseAddEnroll.body);
                               Navigator.pop(context);
                               thanksDialog();
                             },

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'package:learn_pro/services/networkHandler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:convert';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class MyCourse extends StatefulWidget {
   @override
@@ -7,93 +12,91 @@ class MyCourse extends StatefulWidget {
 }
 
 class _MyCourseState extends State<MyCourse> {
-
   @override
   Widget build(BuildContext context) {
-
     double width = MediaQuery.of(context).size.width;
 
     getLessonTile(String title, String img, String videoLength, double width) {
-    return Container(
-      padding: EdgeInsets.all(10.0),
-      margin: EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.0),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            blurRadius: 1.5,
-            spreadRadius: 1.5,
-            color: Colors.grey[200],
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            width: 100.0,
-            height: 100.0,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(img),
-                fit: BoxFit.cover,
+      return Container(
+        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              blurRadius: 1.5,
+              spreadRadius: 1.5,
+              color: Colors.grey[200],
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 100.0,
+              height: 100.0,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(img),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(20.0),
               ),
-              borderRadius: BorderRadius.circular(20.0),
             ),
-          ),
-          Container(
-            width: width - 140.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontFamily: 'Signika Negative',
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.7,
+            Container(
+              width: width - 140.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontFamily: 'Signika Negative',
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.7,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 0.0, right: 8.0, left: 8.0, bottom: 8.0),
-                  child: Text(
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      height: 1.6,
-                      color: Colors.grey,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 0.0, right: 8.0, left: 8.0, bottom: 8.0),
+                    child: Text(
+                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        height: 1.6,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: 0.0, right: 8.0, left: 8.0, bottom: 8.0),
-                  child: Text(
-                    videoLength,
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontFamily: 'Signika Negative',
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.7,
-                      color: headingColor,
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: 0.0, right: 8.0, left: 8.0, bottom: 8.0),
+                    child: Text(
+                      videoLength,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontFamily: 'Signika Negative',
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.7,
+                        color: headingColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
+    }
 
     nestedAppBar() {
       return NestedScrollView(
@@ -126,13 +129,176 @@ class _MyCourseState extends State<MyCourse> {
             ),
           ];
         },
-        body: ListView(
-          children: <Widget>[
-            getLessonTile('Alice Water', 'assets/new_course/new_course_1.png', '20/20 Videos', width),
-            getLessonTile('Gordon Ramsey', 'assets/new_course/new_course_2.png', '3/12 Videos', width),
-            getLessonTile('Lisa Ling', 'assets/new_course/new_course_3.png', '0/15 Videos', width),
-            getLessonTile('Wolfgang Puck', 'assets/new_course/new_course_4.png', '15/30 Videos', width),
-          ],
+        body: Container(
+          alignment: Alignment.center,
+          child: FutureBuilder<List<Courses>>(
+            future: loadProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) print(snapshot.error);
+              return snapshot.hasData
+                  ? ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext ctxt, int index) {
+                        return Slidable(
+                          actionPane: SlidableDrawerActionPane(),
+                          actionExtentRatio: 0.25,
+                          secondaryActions: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 5.0,
+                                bottom: 5.0,
+                              ),
+                              child: IconSlideAction(
+                                caption: 'Delete',
+                                color: Colors.red,
+                                icon: Icons.delete,
+                                onTap: () {
+                                  setState(() {
+                                    // wishlistItemList.removeAt(index);
+                                    // wishlistItem = wishlistItem - 1;
+                                  });
+                                  // Then show a snackbar.
+                                  // Scaffold.of(context).showSnackBar(
+                                  //     SnackBar(content: Text('Item Removed')));
+                                },
+                              ),
+                            ),
+                          ],
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 15.0,
+                              left: 15.0,
+                              top: 10.0,
+                              bottom: 10.0,
+                            ),
+                            padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  blurRadius: 1.5,
+                                  spreadRadius: 1.5,
+                                  color: Colors.grey[200],
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                          snapshot.data[index].courseImage),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                                Container(
+                                  width: width - 150.0,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 8.0,
+                                            bottom: 4.0,
+                                            right: 8.0,
+                                            left: 8.0),
+                                        child: Text(
+                                          snapshot.data[index].courseName,
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontFamily: 'Signika Negative',
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.7,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 0.0,
+                                            right: 8.0,
+                                            left: 8.0,
+                                            bottom: 8.0),
+                                        child: Text(
+                                          '\$${snapshot.data[index].coursePrice}',
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            height: 1.6,
+                                            fontFamily: 'Signika Negative',
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 0.0,
+                                            right: 8.0,
+                                            left: 8.0,
+                                            bottom: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              snapshot.data[index]
+                                                  .courseNumberOfRating,
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontFamily: 'Signika Negative',
+                                                fontWeight: FontWeight.w700,
+                                                letterSpacing: 0.7,
+                                                color: headingColor,
+                                              ),
+                                            ),
+                                            SizedBox(width: 3.0),
+                                            Icon(Icons.star, size: 14.0),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            FontAwesomeIcons.heartBroken,
+                            color: Colors.grey,
+                            size: 60.0,
+                          ),
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          Text(
+                            'No Item in Courses list',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18.0,
+                              fontFamily: 'Signika Negative',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          ),
         ),
       );
     }
@@ -141,4 +307,47 @@ class _MyCourseState extends State<MyCourse> {
       body: nestedAppBar(),
     );
   }
+}
+
+class Courses {
+  String courseId;
+  String courseImage;
+  String courseName;
+  String courseCategory;
+  String courseRating;
+  String courseNumberOfRating;
+  String coursePrice;
+
+  Courses(this.courseId, this.courseImage, this.courseName, this.courseCategory,
+      this.courseRating, this.courseNumberOfRating, this.coursePrice);
+}
+
+Future<List<Courses>> loadProducts() async {
+  final storage = new FlutterSecureStorage();
+  String userId = await storage.read(key: "id");
+  NetworkHandler networkHandler = NetworkHandler();
+  Map<String, String> enrollData = {
+    "user_id": userId,
+  };
+  var enrollcourseResponse =
+      await networkHandler.post("/enrolled-courses", enrollData);
+  Map<String, dynamic> enrolledData = json.decode(enrollcourseResponse.body);
+  List<dynamic> data = enrolledData["data"];
+  List<Courses> courses = [];
+  int courcesNum = data.length;
+
+  for (int i = 0; i < courcesNum; i++) {
+    Map<String, dynamic> subData = data[i];
+    var _list = subData.values.toList();
+    Courses course = Courses(
+        _list[3].toString(),
+        _list[12].toString(),
+        _list[4].toString(),
+        _list[8].toString(),
+        "4.0",
+        "10",
+        _list[6].toString());
+    courses.add(course);
+  }
+  return courses;
 }

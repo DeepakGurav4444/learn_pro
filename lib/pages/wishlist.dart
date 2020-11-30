@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'package:learn_pro/services/networkHandler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
 
 class Wishlist extends StatefulWidget {
   @override
@@ -9,22 +12,8 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
-  int wishlistItem = 2;
-
-  final wishlistItemList = [
-    {
-      'title': 'Design Instruments for Communication',
-      'image': 'assets/new_course/new_course_1.png',
-      'price': '59',
-      'courseRating': '4.0'
-    },
-    {
-      'title': 'Weight Training Courses with Any Di',
-      'image': 'assets/new_course/new_course_2.png',
-      'price': '64',
-      'courseRating': '4.5'
-    }
-  ];
+  final storage = new FlutterSecureStorage();
+  NetworkHandler networkHandler = NetworkHandler();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -60,166 +49,183 @@ class _WishlistState extends State<Wishlist> {
             ),
           ];
         },
-        body: (wishlistItem == 0)
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      FontAwesomeIcons.heartBroken,
-                      color: Colors.grey,
-                      size: 60.0,
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      'No Item in Wishlist',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 18.0,
-                        fontFamily: 'Signika Negative',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : ListView.builder(
-                itemCount: wishlistItemList.length,
-                itemBuilder: (context, index) {
-                  final item = wishlistItemList[index];
-                  return Slidable(
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    secondaryActions: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 5.0,
-                          bottom: 5.0,
-                        ),
-                        child: IconSlideAction(
-                          caption: 'Delete',
-                          color: Colors.red,
-                          icon: Icons.delete,
-                          onTap: () {
-                            setState(() {
-                              wishlistItemList.removeAt(index);
-                              wishlistItem = wishlistItem - 1;
-                            });
-
-                            // Then show a snackbar.
-                            Scaffold.of(context).showSnackBar(
-                                SnackBar(content: Text('Item Removed')));
-                          },
-                        ),
-                      ),
-                    ],
-                    child: Container(
-                      margin: EdgeInsets.only(
-                        right: 15.0,
-                        left: 15.0,
-                        top: 10.0,
-                        bottom: 10.0,
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.0),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            blurRadius: 1.5,
-                            spreadRadius: 1.5,
-                            color: Colors.grey[200],
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            width: 100.0,
-                            height: 100.0,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(item['image']),
-                                fit: BoxFit.cover,
+        body: Container(
+          alignment: Alignment.center,
+          child: FutureBuilder<List<Courses>>(
+            future: loadProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) print(snapshot.error);
+              return snapshot.hasData
+                  ? ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext ctxt, int index) {
+                        return Slidable(
+                          actionPane: SlidableDrawerActionPane(),
+                          actionExtentRatio: 0.25,
+                          secondaryActions: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 5.0,
+                                bottom: 5.0,
                               ),
-                              borderRadius: BorderRadius.circular(20.0),
+                              child: IconSlideAction(
+                                caption: 'Delete',
+                                color: Colors.red,
+                                icon: Icons.delete,
+                                onTap: () async {
+                                  String userId = await storage.read(key: "id");
+                                  Map<String, String> removewishData = {
+                                    "user_id": userId,
+                                    "courseId": snapshot.data[index].courseId
+                                  };
+                                  var deletewishResponse =
+                                      await networkHandler.post(
+                                          "/wishlistremove-course",
+                                          removewishData);
+                                  print(deletewishResponse.body);
+                                  setState(() {});
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(content: Text('Item Removed')));
+                                },
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: width - 150.0,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          ],
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 15.0,
+                              left: 15.0,
+                              top: 10.0,
+                              bottom: 10.0,
+                            ),
+                            padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  blurRadius: 1.5,
+                                  spreadRadius: 1.5,
+                                  color: Colors.grey[200],
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0,
-                                      bottom: 4.0,
-                                      right: 8.0,
-                                      left: 8.0),
-                                  child: Text(
-                                    item['title'],
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontFamily: 'Signika Negative',
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.7,
+                                Container(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                          snapshot.data[index].courseImage),
+                                      fit: BoxFit.cover,
                                     ),
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 0.0,
-                                      right: 8.0,
-                                      left: 8.0,
-                                      bottom: 8.0),
-                                  child: Text(
-                                    '\$${item['price']}',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      height: 1.6,
-                                      fontFamily: 'Signika Negative',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 0.0,
-                                      right: 8.0,
-                                      left: 8.0,
-                                      bottom: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                Container(
+                                  width: width - 150.0,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        item['courseRating'],
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                          fontFamily: 'Signika Negative',
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.7,
-                                          color: headingColor,
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 8.0,
+                                            bottom: 4.0,
+                                            right: 8.0,
+                                            left: 8.0),
+                                        child: Text(
+                                          snapshot.data[index].courseName,
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontFamily: 'Signika Negative',
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.7,
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(width: 3.0),
-                                      Icon(Icons.star, size: 14.0),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 0.0,
+                                            right: 8.0,
+                                            left: 8.0,
+                                            bottom: 8.0),
+                                        child: Text(
+                                          '\$${snapshot.data[index].coursePrice}',
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            height: 1.6,
+                                            fontFamily: 'Signika Negative',
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 0.0,
+                                            right: 8.0,
+                                            left: 8.0,
+                                            bottom: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              snapshot.data[index]
+                                                  .courseNumberOfRating,
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontFamily: 'Signika Negative',
+                                                fontWeight: FontWeight.w700,
+                                                letterSpacing: 0.7,
+                                                color: headingColor,
+                                              ),
+                                            ),
+                                            SizedBox(width: 3.0),
+                                            Icon(Icons.star, size: 14.0),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            FontAwesomeIcons.heartBroken,
+                            color: Colors.grey,
+                            size: 60.0,
+                          ),
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          Text(
+                            'No Item in Wishlist',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18.0,
+                              fontFamily: 'Signika Negative',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+            },
+          ),
+        ),
       );
     }
 
@@ -227,4 +233,47 @@ class _WishlistState extends State<Wishlist> {
       body: nestedAppBar(),
     );
   }
+}
+
+class Courses {
+  String courseId;
+  String courseImage;
+  String courseName;
+  String courseCategory;
+  String courseRating;
+  String courseNumberOfRating;
+  String coursePrice;
+
+  Courses(this.courseId, this.courseImage, this.courseName, this.courseCategory,
+      this.courseRating, this.courseNumberOfRating, this.coursePrice);
+}
+
+Future<List<Courses>> loadProducts() async {
+  final storage = new FlutterSecureStorage();
+  String userId = await storage.read(key: "id");
+  NetworkHandler networkHandler = NetworkHandler();
+  Map<String, String> wishData = {
+    "user_id": userId,
+  };
+  var wishcourseResponse =
+      await networkHandler.post("/wishlistshow-course", wishData);
+  Map<String, dynamic> profileData = json.decode(wishcourseResponse.body);
+  List<dynamic> data = profileData["data"];
+  List<Courses> courses = [];
+  int courcesNum = data.length;
+
+  for (int i = 0; i < courcesNum; i++) {
+    Map<String, dynamic> subData = data[i];
+    var _list = subData.values.toList();
+    Courses course = Courses(
+        _list[3].toString(),
+        _list[12].toString(),
+        _list[4].toString(),
+        _list[8].toString(),
+        "4.0",
+        "10",
+        _list[6].toString());
+    courses.add(course);
+  }
+  return courses;
 }

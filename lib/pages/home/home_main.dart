@@ -68,8 +68,7 @@ class _HomeMainState extends State<HomeMain> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(40.0),
                             image: DecorationImage(
-                              image:
-                                  AssetImage('assets/user_profile/user_3.jpg'),
+                              image: AssetImage('assets/user_profile/user.png'),
                               fit: BoxFit.cover,
                             ),
                           ),

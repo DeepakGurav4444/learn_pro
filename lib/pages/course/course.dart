@@ -5,6 +5,8 @@ import 'package:learn_pro/pages/course/lessons.dart';
 import 'package:learn_pro/pages/course/overview.dart';
 import 'package:learn_pro/pages/payment/select_plan.dart';
 import 'package:learn_pro/pages/video_play/video_play.dart';
+import 'package:learn_pro/services/networkHandler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CoursePage extends StatefulWidget {
   final PassDataToCoursePage courseData;
@@ -16,6 +18,8 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
+  final storage = new FlutterSecureStorage();
+  NetworkHandler networkHandler = NetworkHandler();
   bool wishlist = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -56,7 +60,16 @@ class _CoursePageState extends State<CoursePage> {
               ),
               actions: <Widget>[
                 InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    String courseId = courseData.courseId;
+                    String userId = await storage.read(key: "id");
+                    Map<String, String> wishAddData = {
+                      "courseId": courseId,
+                      "user_id": userId
+                    };
+                    var responseAddWish = await networkHandler.post(
+                        "/wishlistadd-course", wishAddData);
+                    print(responseAddWish.body);
                     onAddedInWishlist();
                   },
                   child: Row(
@@ -204,6 +217,7 @@ class _CoursePageState extends State<CoursePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => SelectPlan(
+                                              courseId: courseData.courseId,
                                               courseName: courseData.courseName,
                                               image: courseData.courseImage,
                                               price: courseData.coursePrice,

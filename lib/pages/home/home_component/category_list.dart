@@ -14,23 +14,35 @@ class _CategoryListState extends State<CategoryList> {
     },
     {
       'categoryName': 'Academics',
-      'image': 'assets/category/category_2.jpg',
+      'image': 'assets/category/online-education.png',
     },
     {
-      'categoryName': 'Business & Marketing',
-      'image': 'assets/category/category_3.jpg',
+      'categoryName': 'Science & Texhnology',
+      'image': 'assets/category/innovation.png',
     },
     {
-      'categoryName': 'Computer Science',
-      'image': 'assets/category/category_4.jpg',
+      'categoryName': 'Finance & Accounting',
+      'image': 'assets/category/budget.png',
     },
     {
-      'categoryName': '3D Printing Concept',
-      'image': 'assets/category/category_5.jpg',
+      'categoryName': 'Development & Programming',
+      'image': 'assets/category/web-development.png',
     },
     {
-      'categoryName': 'Electronic',
-      'image': 'assets/category/category_6.jpg',
+      'categoryName': 'IT & Software',
+      'image': 'assets/category/it.png',
+    },
+    {
+      'categoryName': 'Design',
+      'image': 'assets/category/web-design.png',
+    },
+    {
+      'categoryName': 'Marketing',
+      'image': 'assets/category/infographic.png',
+    },
+    {
+      'categoryName': 'Photography',
+      'image': 'assets/category/camera.png',
     }
   ];
   @override
