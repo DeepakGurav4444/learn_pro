@@ -157,7 +157,8 @@ class _NewCourseState extends State<NewCourse> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          snapshot.data[index].coursePrice,
+                                          snapshot.data[index].coursePrice +
+                                              " ₹",
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 18.0,

@@ -17,19 +17,19 @@ class _CategoryListState extends State<CategoryList> {
       'image': 'assets/category/online-education.png',
     },
     {
-      'categoryName': 'Science & Texhnology',
+      'categoryName': 'Science and Technology',
       'image': 'assets/category/innovation.png',
     },
     {
-      'categoryName': 'Finance & Accounting',
+      'categoryName': 'Finance and Accounting',
       'image': 'assets/category/budget.png',
     },
     {
-      'categoryName': 'Development & Programming',
+      'categoryName': 'Development and Programming',
       'image': 'assets/category/web-development.png',
     },
     {
-      'categoryName': 'IT & Software',
+      'categoryName': 'IT and Software',
       'image': 'assets/category/it.png',
     },
     {

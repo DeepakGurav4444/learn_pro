@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
+import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
-import 'package:flutter_slidable/flutter_slidable.dart';
+
+import 'course/course.dart';
 
 class MyCourse extends StatefulWidget {
   @override
@@ -139,31 +141,25 @@ class _MyCourseState extends State<MyCourse> {
                   ? ListView.builder(
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext ctxt, int index) {
-                        return Slidable(
-                          actionPane: SlidableDrawerActionPane(),
-                          actionExtentRatio: 0.25,
-                          secondaryActions: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(
-                                top: 5.0,
-                                bottom: 5.0,
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CoursePage(
+                                  courseData: PassDataToCoursePage(
+                                    snapshot.data[index].courseId,
+                                    snapshot.data[index].courseImage,
+                                    snapshot.data[index].courseName,
+                                    snapshot.data[index].courseCategory,
+                                    snapshot.data[index].courseRating,
+                                    snapshot.data[index].courseNumberOfRating,
+                                    snapshot.data[index].coursePrice,
+                                  ),
+                                ),
                               ),
-                              child: IconSlideAction(
-                                caption: 'Delete',
-                                color: Colors.red,
-                                icon: Icons.delete,
-                                onTap: () {
-                                  setState(() {
-                                    // wishlistItemList.removeAt(index);
-                                    // wishlistItem = wishlistItem - 1;
-                                  });
-                                  // Then show a snackbar.
-                                  // Scaffold.of(context).showSnackBar(
-                                  //     SnackBar(content: Text('Item Removed')));
-                                },
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                           child: Container(
                             margin: EdgeInsets.only(
                               right: 15.0,
@@ -228,7 +224,8 @@ class _MyCourseState extends State<MyCourse> {
                                             left: 8.0,
                                             bottom: 8.0),
                                         child: Text(
-                                          '\$${snapshot.data[index].coursePrice}',
+                                          snapshot.data[index].coursePrice +
+                                              " ₹",
                                           style: TextStyle(
                                             fontSize: 18.0,
                                             height: 1.6,

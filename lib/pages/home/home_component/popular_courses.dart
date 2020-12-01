@@ -155,7 +155,8 @@ class _PoplularCourseState extends State<PoplularCourse> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          '\$${snapshot.data[index].coursePrice}',
+                                          snapshot.data[index].coursePrice +
+                                              " ₹",
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 18.0,
