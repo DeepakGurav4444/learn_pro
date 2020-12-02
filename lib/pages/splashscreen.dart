@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:learn_pro/pages/home/home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/onboarding/onboarding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -12,7 +12,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   String _id;
-  final storage = new FlutterSecureStorage();
   @override
   void initState() {
     checkLogin();
@@ -33,19 +32,15 @@ class _SplashScreenState extends State<SplashScreen> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: Container(
         height: height,
         width: width,
-        color: textColor,
-        child: Center(
-          child: Text(
-            'Welcome!',
-            style: TextStyle(
-              fontFamily: 'Signika Negative',
-              fontSize: 60.0,
-              color: Colors.white,
-            ),
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 0.1),
+          child: Center(
+            child: Image.asset("assets/final-logo.png"),
           ),
         ),
       ),
@@ -53,7 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   checkLogin() async {
-    _id = await storage.read(key: "id");
+    final pref = await SharedPreferences.getInstance();
+    _id = await pref.getString("id");
     print(_id);
   }
 }

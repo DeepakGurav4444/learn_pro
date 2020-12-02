@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/services/networkHandler.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'course/course.dart';
@@ -320,8 +320,8 @@ class Courses {
 }
 
 Future<List<Courses>> loadProducts() async {
-  final storage = new FlutterSecureStorage();
-  String userId = await storage.read(key: "id");
+  final pref = await SharedPreferences.getInstance();
+  String userId = await pref.getString("id");
   NetworkHandler networkHandler = NetworkHandler();
   Map<String, String> enrollData = {
     "user_id": userId,

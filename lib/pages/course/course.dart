@@ -6,7 +6,7 @@ import 'package:learn_pro/pages/course/overview.dart';
 import 'package:learn_pro/pages/payment/select_plan.dart';
 import 'package:learn_pro/pages/video_play/video_play.dart';
 import 'package:learn_pro/services/networkHandler.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoursePage extends StatefulWidget {
   final PassDataToCoursePage courseData;
@@ -18,7 +18,6 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
-  final storage = new FlutterSecureStorage();
   NetworkHandler networkHandler = NetworkHandler();
   bool wishlist = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -62,7 +61,8 @@ class _CoursePageState extends State<CoursePage> {
                 InkWell(
                   onTap: () async {
                     String courseId = courseData.courseId;
-                    String userId = await storage.read(key: "id");
+                    final pref = await SharedPreferences.getInstance();
+                    String userId = await pref.getString("id") ?? "";
                     Map<String, String> wishAddData = {
                       "courseId": courseId,
                       "user_id": userId
@@ -198,7 +198,7 @@ class _CoursePageState extends State<CoursePage> {
                                 Column(
                                   children: <Widget>[
                                     Text(
-                                      '\$${courseData.coursePrice}',
+                                      courseData.coursePrice + " ₹",
                                       style: TextStyle(
                                         color: textColor,
                                         fontWeight: FontWeight.w700,

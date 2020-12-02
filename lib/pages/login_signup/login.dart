@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/home/home.dart';
@@ -10,6 +10,7 @@ import 'package:learn_pro/pages/login_signup/forgot_password.dart';
 import 'package:learn_pro/pages/login_signup/signup.dart';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -17,7 +18,36 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final storage = new FlutterSecureStorage();
+  //Timer
+  Timer _timer;
+  int _timeOut = 5;
+  void _startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = Timer.periodic(oneSec, (timer) {
+      if (_timeOut < 1) {
+        timer.cancel();
+        setState(() {
+          circular = false;
+        });
+        Fluttertoast.showToast(
+          msg: 'Email or Password incorrect',
+          backgroundColor: Colors.black,
+          textColor: Theme.of(context).appBarTheme.color,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  //for email validation
+  RegExp emailReg =
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z]+");
+  bool circular = false;
   NetworkHandler networkHandler = NetworkHandler();
   //Controllers for validation
   TextEditingController _emailController = TextEditingController();
@@ -83,6 +113,8 @@ class _LoginState extends State<Login> {
                       validator: (String val) {
                         if (val.isEmpty) {
                           return "field can't be empty";
+                        } else if (!emailReg.hasMatch(val)) {
+                          return "Enter Valid Email Adderess";
                         }
                       },
                       decoration: InputDecoration(
@@ -123,30 +155,54 @@ class _LoginState extends State<Login> {
                     SizedBox(height: 40.0),
                     InkWell(
                       onTap: () async {
+                        _startTimer();
                         Map<String, String> data = {
                           "email": _emailController.text,
                           "password": _passwordController.text
                         };
                         if (loginFormKey.currentState.validate()) {
+                          setState(() {
+                            circular = true;
+                          });
                           var responseLogin =
                               await networkHandler.post("/login", data);
                           Map<String, dynamic> loginOutput =
                               json.decode(responseLogin.body);
                           print(loginOutput);
-                          await storage.write(
-                              key: "id", value: loginOutput["_id"]);
-                          await storage.write(
-                              key: "email", value: _emailController.text);
-                          await storage.write(
-                              key: "password", value: _passwordController.text);
+                          if (responseLogin.statusCode == 200 ||
+                              responseLogin.statusCode == 201) {
+                            final pref = await SharedPreferences.getInstance();
+                            await pref.setString("id", loginOutput["_id"]);
+                            await pref.setString(
+                                "email", _emailController.text);
+                            await pref.setString(
+                                "password", _passwordController.text);
+                            setState(() {
+                              circular = false;
+                            });
+                            Fluttertoast.showToast(
+                              msg: 'Logged In',
+                              backgroundColor: Colors.black,
+                              textColor: Theme.of(context).appBarTheme.color,
+                            );
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: Home(),
+                              ),
+                            );
+                          } else {
+                            // setState(() {
+                            //   circular = false;
+                            // });
+                            // Fluttertoast.showToast(
+                            //   msg: 'Email or Password incorrect',
+                            //   backgroundColor: Colors.black,
+                            //   textColor: Theme.of(context).appBarTheme.color,
+                            // );
+                          }
                         }
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: Home(),
-                          ),
-                        );
                       },
                       child: Container(
                         padding: EdgeInsets.all(15.0),
@@ -155,14 +211,18 @@ class _LoginState extends State<Login> {
                           borderRadius: BorderRadius.circular(5.0),
                           color: textColor,
                         ),
-                        child: Text(
-                          'Sign in',
-                          style: TextStyle(
-                            fontFamily: 'Signika Negative',
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        child: circular
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text(
+                                'Sign in',
+                                style: TextStyle(
+                                  fontFamily: 'Signika Negative',
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ),
                     ),
                     SizedBox(height: 15.0),
@@ -216,72 +276,72 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 30.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(15.0),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.0),
-                          color: fbBgColor,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset(
-                              'assets/facebook.png',
-                              height: 25.0,
-                              fit: BoxFit.fitHeight,
-                            ),
-                            SizedBox(width: 10.0),
-                            Text(
-                              'Log in with Facebook',
-                              style: TextStyle(
-                                fontFamily: 'Signika Negative',
-                                fontSize: 18.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(15.0),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.0),
-                          color: Colors.white,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset(
-                              'assets/google.png',
-                              height: 25.0,
-                              fit: BoxFit.fitHeight,
-                            ),
-                            SizedBox(width: 10.0),
-                            Text(
-                              'Log in with Google',
-                              style: TextStyle(
-                                fontFamily: 'Signika Negative',
-                                fontSize: 18.0,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // SizedBox(height: 30.0),
+                    // InkWell(
+                    //   onTap: () {},
+                    //   child: Container(
+                    //     padding: EdgeInsets.all(15.0),
+                    //     alignment: Alignment.center,
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(5.0),
+                    //       color: fbBgColor,
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       crossAxisAlignment: CrossAxisAlignment.center,
+                    //       children: <Widget>[
+                    //         Image.asset(
+                    //           'assets/facebook.png',
+                    //           height: 25.0,
+                    //           fit: BoxFit.fitHeight,
+                    //         ),
+                    //         SizedBox(width: 10.0),
+                    //         Text(
+                    //           'Log in with Facebook',
+                    //           style: TextStyle(
+                    //             fontFamily: 'Signika Negative',
+                    //             fontSize: 18.0,
+                    //             color: Colors.white,
+                    //             fontWeight: FontWeight.w700,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 20.0),
+                    // InkWell(
+                    //   onTap: () {},
+                    //   child: Container(
+                    //     padding: EdgeInsets.all(15.0),
+                    //     alignment: Alignment.center,
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(5.0),
+                    //       color: Colors.white,
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       crossAxisAlignment: CrossAxisAlignment.center,
+                    //       children: <Widget>[
+                    //         Image.asset(
+                    //           'assets/google.png',
+                    //           height: 25.0,
+                    //           fit: BoxFit.fitHeight,
+                    //         ),
+                    //         SizedBox(width: 10.0),
+                    //         Text(
+                    //           'Log in with Google',
+                    //           style: TextStyle(
+                    //             fontFamily: 'Signika Negative',
+                    //             fontSize: 18.0,
+                    //             color: Colors.grey[500],
+                    //             fontWeight: FontWeight.w700,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

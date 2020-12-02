@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/home/home.dart';
 import 'package:learn_pro/services/networkHandler.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectPlan extends StatefulWidget {
   final String courseName, image, price, courseId;
@@ -13,7 +13,6 @@ class SelectPlan extends StatefulWidget {
 }
 
 class _SelectPlanState extends State<SelectPlan> {
-  final storage = new FlutterSecureStorage();
   NetworkHandler networkHandler = NetworkHandler();
   @override
   Widget build(BuildContext context) {
@@ -228,7 +227,9 @@ class _SelectPlanState extends State<SelectPlan> {
                           ),
                           InkWell(
                             onTap: () async {
-                              String userId = await storage.read(key: "id");
+                              final pref =
+                                  await SharedPreferences.getInstance();
+                              String userId = await pref.getString("id");
                               Map<String, String> enrollAddData = {
                                 "courseId": courseId,
                                 "user_id": userId

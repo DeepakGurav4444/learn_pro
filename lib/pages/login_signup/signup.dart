@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/home/home.dart';
-import 'package:learn_pro/pages/login_signup/otp_screen.dart';
 import 'package:learn_pro/services/networkHandler.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -14,7 +14,9 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final storage = new FlutterSecureStorage();
+  RegExp emailReg =
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z]+");
+  bool circular = false;
   //Network Handler Object
   NetworkHandler networkHandler = NetworkHandler();
 
@@ -119,6 +121,8 @@ class _SignUpState extends State<SignUp> {
                       validator: (String val) {
                         if (val.isEmpty) {
                           return "field can't be empty";
+                        } else if (!emailReg.hasMatch(val)) {
+                          return "Enter Valid Email Adderess";
                         }
                       },
                       controller: _emailController,
@@ -186,6 +190,9 @@ class _SignUpState extends State<SignUp> {
                     InkWell(
                       onTap: () async {
                         if (registerFormKey.currentState.validate()) {
+                          setState(() {
+                            circular = true;
+                          });
                           //Call For Register
                           Map<String, String> data = {
                             "username": _usernameController.text,
@@ -196,28 +203,49 @@ class _SignUpState extends State<SignUp> {
                           var responseRegister =
                               await networkHandler.post("/register", data);
                           print(responseRegister.body);
-                          Map<String, String> loginData = {
-                            "email": _emailController.text,
-                            "password": _passwordController.text
-                          };
-                          var responseLogin =
-                              await networkHandler.post("/login", loginData);
-                          Map<String, dynamic> loginOutput =
-                              json.decode(responseLogin.body);
-                          print(loginOutput);
-                          await storage.write(
-                              key: "id", value: loginOutput["_id"]);
-                          await storage.write(
-                              key: "email", value: _emailController.text);
-                          await storage.write(
-                              key: "password", value: _passwordController.text);
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: Home(),
-                            ),
-                          );
+                          if (responseRegister.statusCode == 200 ||
+                              responseRegister.statusCode == 201) {
+                            Map<String, String> loginData = {
+                              "email": _emailController.text,
+                              "password": _passwordController.text
+                            };
+                            setState(() {
+                              circular = false;
+                            });
+                            Fluttertoast.showToast(
+                              msg: 'User Registered',
+                              backgroundColor: Colors.black,
+                              textColor: Theme.of(context).appBarTheme.color,
+                            );
+                            var responseLogin =
+                                await networkHandler.post("/login", loginData);
+                            Map<String, dynamic> loginOutput =
+                                json.decode(responseLogin.body);
+                            print(loginOutput);
+                            final pref = await SharedPreferences.getInstance();
+                            await pref.setString("id", loginOutput["_id"]);
+                            await pref.setString(
+                                "email", _emailController.text);
+                            await pref.setString(
+                                "password", _passwordController.text);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: Home(),
+                              ),
+                            );
+                          } else {
+                            setState(() {
+                              circular = false;
+                            });
+                            Fluttertoast.showToast(
+                              msg:
+                                  'Something went wrong try different username or password ',
+                              backgroundColor: Colors.black,
+                              textColor: Theme.of(context).appBarTheme.color,
+                            );
+                          }
                         }
                       },
                       child: Container(
@@ -227,14 +255,18 @@ class _SignUpState extends State<SignUp> {
                           borderRadius: BorderRadius.circular(5.0),
                           color: textColor,
                         ),
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(
-                            fontFamily: 'Signika Negative',
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        child: circular
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text(
+                                'Sign up',
+                                style: TextStyle(
+                                  fontFamily: 'Signika Negative',
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ),
                     ),
                   ],

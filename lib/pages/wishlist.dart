@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/dataClass/passDataToCoursePage.dart';
 import 'package:learn_pro/services/networkHandler.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'course/course.dart';
@@ -15,7 +15,6 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
-  final storage = new FlutterSecureStorage();
   NetworkHandler networkHandler = NetworkHandler();
   @override
   Widget build(BuildContext context) {
@@ -95,8 +94,9 @@ class _WishlistState extends State<Wishlist> {
                                   color: Colors.red,
                                   icon: Icons.delete,
                                   onTap: () async {
-                                    String userId =
-                                        await storage.read(key: "id");
+                                    final pref =
+                                        await SharedPreferences.getInstance();
+                                    String userId = await pref.getString("id");
                                     Map<String, String> removewishData = {
                                       "user_id": userId,
                                       "courseId": snapshot.data[index].courseId
@@ -275,8 +275,8 @@ class Courses {
 }
 
 Future<List<Courses>> loadProducts() async {
-  final storage = new FlutterSecureStorage();
-  String userId = await storage.read(key: "id");
+  final pref = await SharedPreferences.getInstance();
+  String userId = await pref.getString("id");
   NetworkHandler networkHandler = NetworkHandler();
   Map<String, String> wishData = {
     "user_id": userId,

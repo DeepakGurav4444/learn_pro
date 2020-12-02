@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:learn_pro/appTheme/appTheme.dart';
 import 'dart:convert';
 import 'package:learn_pro/pages/login_signup/login.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:learn_pro/services/networkHandler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettings extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class AccountSettings extends StatefulWidget {
 
 class _AccountSettingsState extends State<AccountSettings> {
   bool receiveData = false;
-  final storage = FlutterSecureStorage();
+
   NetworkHandler networkHandler = NetworkHandler();
   String username;
   String email;
@@ -294,7 +295,10 @@ class _AccountSettingsState extends State<AccountSettings> {
                       ),
                       InkWell(
                         onTap: () async {
-                          await storage.deleteAll();
+                          final pref = await SharedPreferences.getInstance();
+                          await pref.remove("id");
+                          await pref.remove("email");
+                          await pref.remove("password");
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -541,8 +545,9 @@ class _AccountSettingsState extends State<AccountSettings> {
   }
 
   getData() async {
-    String getUsername = await storage.read(key: "email");
-    String getPassword = await storage.read(key: "password");
+    final pref = await SharedPreferences.getInstance();
+    String getUsername = await pref.getString("email");
+    String getPassword = await pref.getString("password");
     Map<String, String> data = {"email": getUsername, "password": getPassword};
     print(data);
     var responseLogin = await networkHandler.post("/login", data);
