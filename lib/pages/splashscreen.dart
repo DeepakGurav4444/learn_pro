@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:learn_pro/pages/home/home.dart';
 import 'package:flutter/material.dart';
-import 'package:learn_pro/appTheme/appTheme.dart';
 import 'package:learn_pro/pages/onboarding/onboarding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,6 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   checkLogin() async {
     final pref = await SharedPreferences.getInstance();
+    // ignore: await_only_futures
     _id = await pref.getString("id");
     print(_id);
   }

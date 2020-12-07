@@ -546,7 +546,9 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   getData() async {
     final pref = await SharedPreferences.getInstance();
+    // ignore: await_only_futures
     String getUsername = await pref.getString("email");
+    // ignore: await_only_futures
     String getPassword = await pref.getString("password");
     Map<String, String> data = {"email": getUsername, "password": getPassword};
     print(data);

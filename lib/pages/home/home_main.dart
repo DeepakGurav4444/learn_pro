@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:learn_pro/pages/home/home_component/category_list.dart';
-import 'package:learn_pro/pages/home/home_component/instructors_slide.dart';
 import 'package:learn_pro/pages/home/home_component/main_slider.dart';
 import 'package:learn_pro/pages/home/home_component/new_courses.dart';
 import 'package:learn_pro/pages/home/home_component/popular_courses.dart';
@@ -27,9 +26,11 @@ class _HomeMainState extends State<HomeMain> {
                   icon: Icon(Icons.notifications),
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Notifications()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Notifications(),
+                      ),
+                    );
                   },
                 ),
               ],

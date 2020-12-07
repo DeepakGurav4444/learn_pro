@@ -321,6 +321,7 @@ class Courses {
 
 Future<List<Courses>> loadProducts() async {
   final pref = await SharedPreferences.getInstance();
+  // ignore: await_only_futures
   String userId = await pref.getString("id");
   NetworkHandler networkHandler = NetworkHandler();
   Map<String, String> enrollData = {

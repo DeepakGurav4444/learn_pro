@@ -161,7 +161,7 @@ class _OnBoardingState extends State<OnBoarding> {
       return Future.value(false);
     }
     exit(0);
-    return Future.value(true);
+    // return Future.value(true);
   }
 }
 

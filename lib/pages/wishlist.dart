@@ -96,6 +96,7 @@ class _WishlistState extends State<Wishlist> {
                                   onTap: () async {
                                     final pref =
                                         await SharedPreferences.getInstance();
+                                    // ignore: await_only_futures
                                     String userId = await pref.getString("id");
                                     Map<String, String> removewishData = {
                                       "user_id": userId,
@@ -276,6 +277,7 @@ class Courses {
 
 Future<List<Courses>> loadProducts() async {
   final pref = await SharedPreferences.getInstance();
+  // ignore: await_only_futures
   String userId = await pref.getString("id");
   NetworkHandler networkHandler = NetworkHandler();
   Map<String, String> wishData = {
